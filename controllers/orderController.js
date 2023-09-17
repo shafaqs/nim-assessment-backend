@@ -31,21 +31,25 @@ const create = async (req, res) => {
   }
 };
 
+
 const update = async (req, res) => {
   try {
-    const order = await Order.update(req.params.id, req.body);
-    res.send(order);
+    const updatedOrder = await Order.update(req.params.id, req.body);
+    res.send(updatedOrder);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send("An error occurred while updating the order.");
   }
 };
+
+
 
 const remove = async (req, res) => {
   try {
     const order = await Order.remove(req.params.id);
     res.send(order);
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({ message: "An error occurred while trying to remove the order." });
+
   }
 };
 

@@ -177,16 +177,6 @@ const preload = async () => {
       ]
     }
   ];
-  orders.forEach(order => {
-    let totalAmount = 0;
-    order.items.forEach(orderItem => {
-      const menuItem = menuItems.find(menuItem => menuItem._id === orderItem.item);
-      if (menuItem) {
-        totalAmount += menuItem.price * orderItem.quantity;
-      }
-    });
-    order.totalAmount = totalAmount;
-  });
 
   const createdOrders = await Promise.all(
     orders.map((order) => createOrder(order))

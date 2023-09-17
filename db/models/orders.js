@@ -68,7 +68,15 @@ const create = async (body) => {
 };
 
 const update = async (id, body) => {
+
+  body.updatedAt = new Date();
+
   const order = await Order.findByIdAndUpdate(id, body, { new: true });
+  console.log("Updated order:", order);
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
   return order;
 };
 

@@ -65,6 +65,7 @@ const preload = async () => {
   const createdMenuItems = await Promise.all(
     menuItems.map((item) => createMenuItem(item))
   );
+
   // eslint-disable-next-line no-console
   // console.log("createdMenuItems", createdMenuItems);
   // create some new orders

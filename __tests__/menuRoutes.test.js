@@ -79,6 +79,7 @@ describe("routes", () => {
       // create a menu item with the word "chicken" in the description
       await MenuItems.create(testMenuItem);
       const response = await request(server).get("/api/menu/search?q=chicken");
+      console.log("Response body55:", response.body);
       expect(response.body).toBeInstanceOf(Array);
       expect(response.body[0].description).toBe(
         "test description it has chicken"

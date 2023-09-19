@@ -75,42 +75,69 @@ const getByStatus = async (req, res) => {
     }
 
     const orders = await Order.find(filter);
+
+    // Here, log whether the orders are an array
+    // eslint-disable-next-line no-console
+    console.log(Array.isArray(orders));
+
     res.send(orders);
   } catch (error) {
     res.status(500).send(error);
   }
 };
 
+
 const getTotalSales = async (req, res) => {
   try {
     const query = {};
 
     if (req.query.startDate && req.query.endDate) {
-      query.date = {
+      query.createdAt = {
         $gte: new Date(req.query.startDate),
         $lte: new Date(req.query.endDate)
       };
     }
 
-    // Logging the query for debugging
     // eslint-disable-next-line no-console
     console.log("Query used for aggregation:", query);
 
     const results = await Order.aggregate([
       { $match: query },
-      { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+      { $unwind: "$items" },  // Deconstruct the items array
+      {
+        $lookup: {
+          from: "menuitems",
+          localField: "items.item",
+          foreignField: "_id",
+          as: "itemDetails"
+        }
+      },
+      { $unwind: "$itemDetails" }, // Deconstruct the resulting itemDetails array
+      {
+        $group: {
+          _id: "$_id",
+          totalForOrder: {
+            $sum: { $multiply: ["$items.quantity", "$itemDetails.price"] }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: "$totalForOrder" }
+        }
+      }
     ]);
 
-    // Logging the results for debugging
     // eslint-disable-next-line no-console
-    console.log("Aggregation results:", results);
+    // console.log("Aggregation results:", results);
 
-    const totalSales = results.length > 0 ? results[0].total : 0;
+    const totalSales = results.length > 0 ? results[0].totalSales : 0;
     res.json({ total: totalSales });
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error("Error fetching total sales:", error);
-    res.status(500).send(error);
+    // console.error("Error fetching total sales:", error);
+    res.status(500).send("Internal Server Error");
   }
 };
 

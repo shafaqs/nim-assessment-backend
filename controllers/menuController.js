@@ -38,7 +38,7 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     await MenuItems.remove(req.params.id);
-    res.send({ message: "Item deleted successfully" });
+    res.send(req.params.id);  // Sending the deleted item's ID
   } catch (error) {
     res.status(500).send(error);
   }
@@ -47,11 +47,14 @@ const remove = async (req, res) => {
 const search = async (req, res) => {
   try {
     const query = req.query.q;
+    // eslint-disable-next-line no-console
+    console.log("Search Query: ", query);
     const results = await MenuItems.search(query);
     res.send(results);
   } catch (error) {
     res.status(500).send(error);
   }
 };
+
 
 module.exports = { getAll, getOne, create, remove, update, search };

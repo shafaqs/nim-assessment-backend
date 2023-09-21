@@ -80,7 +80,7 @@ const getByStatus = async (req, res) => {
     // eslint-disable-next-line no-console
     console.log(Array.isArray(orders));
 
-    res.send(orders);
+    res.send({ type: typeof orders, isArray: Array.isArray(orders), data: orders });
   } catch (error) {
     res.status(500).send(error);
   }
